@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说接龙作者投票 - 最受欢迎作者等你来选</title>
+    <meta name="description" content="参与小说接龙作者投票，选出你最喜爱的创作者，支持他们的文学创作！">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #111827;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 80px; /* 为底部固定栏留空间 */
+        }
+
+        /* 容器与布局 */
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* 页面头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+            border-radius: 16px;
+            padding: 32px 24px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="stars" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="2" cy="2" r="1" fill="white" opacity="0.1"/><circle cx="18" cy="8" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="15" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23stars)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* 板块标题 */
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 24px;
+            padding-left: 16px;
+            border-left: 4px solid #7c3aed;
+            color: #111827;
+        }
+
+        /* 作者列表 */
+        .authors-list {
+            margin-bottom: 48px;
+        }
+
+        .author-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .author-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .author-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .author-card:hover::before {
+            left: 100%;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .author-avatar::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .author-card:hover .author-avatar::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .author-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .author-name {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 4px;
+            color: #111827;
+        }
+
+        .author-desc {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .vote-count {
+            background: #ede9fe;
+            color: #7c3aed;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .vote-btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vote-btn:hover {
+            background: #6d28d9;
+            transform: translateY(-1px);
+        }
+
+        .vote-btn:active {
+            transform: translateY(0);
+            transition: transform 0.1s ease;
+        }
+
+        .vote-btn:disabled {
+            background: #e5e7eb;
+            color: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .vote-btn:disabled:hover {
+            background: #e5e7eb;
+            transform: none;
+        }
+
+        /* 投票成功动画 */
+        .vote-success {
+            animation: voteSuccess 0.5s ease;
+        }
+
+        @keyframes voteSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background: #059669; }
+            100% { transform: scale(1); }
+        }
+
+        /* 排行榜 */
+        .leaderboard {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #e5e7eb;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #a1a1aa, #71717a);
+            color: white;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #d69f7e, #b45309);
+            color: white;
+        }
+
+        .rank-other {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .crown {
+            font-size: 18px;
+        }
+
+        .leaderboard-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .leaderboard-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #ede9fe;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+            border-radius: 4px;
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .leaderboard-votes {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* 底部固定栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e5e7eb;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .total-votes {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .total-votes strong {
+            color: #7c3aed;
+            font-weight: 700;
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        /* 分享提示 */
+        .share-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .share-toast.show {
+            opacity: 1;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .author-card, .leaderboard-item {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .author-card:nth-child(1) { animation-delay: 0.1s; }
+        .author-card:nth-child(2) { animation-delay: 0.2s; }
+        .author-card:nth-child(3) { animation-delay: 0.3s; }
+        .author-card:nth-child(4) { animation-delay: 0.4s; }
+        .author-card:nth-child(5) { animation-delay: 0.5s; }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .author-card {
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .author-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .author-name {
+                font-size: 16px;
+            }
+
+            .vote-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+                min-width: 70px;
+            }
+
+            .bottom-bar {
+                padding: 12px 16px;
+            }
+
+            .share-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* 减少动画设置 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面头部 -->
+        <div class="header">
+            <h1>📚 小说接龙作者投票</h1>
+            <p>为最喜爱的创作者投票，支持文学创作！</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalVotes">0</div>
+                    <div class="stat-label">总票数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalAuthors">19</div>
+                    <div class="stat-label">参与作者</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalVoters">0</div>
+                    <div class="stat-label">投票人数</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 作者列表 -->
+        <h2 class="section-title">创作者列表</h2>
+        <div class="authors-list" id="authorsList">
+            <!-- 作者卡片将通过JavaScript动态生成 -->
+        </div>
+
+        <!-- 排行榜 -->
+        <h2 class="section-title">实时排行榜</h2>
+        <div class="leaderboard" id="leaderboard">
+            <!-- 排行榜项目将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <!-- 底部固定栏 -->
+    <div class="bottom-bar">
+        <div class="total-votes">
+            总票数: <strong id="bottomTotalVotes">0</strong>
+        </div>
+        <button class="share-btn" onclick="shareToWeChat()">
+            <span>📱</span>
+            分享给朋友
+        </button>
+    </div>
+
+    <!-- 分享提示 -->
+    <div class="share-toast" id="shareToast">
+        快去分享给好友吧！
+    </div>
+
+    <script>
+        // 作者数据
+        const authors = [
+            {
+                id: 1,
+                name: "陈姣凝/新雨",
+                desc: "《秋雨》- 悬疑推理类小说接龙创作者，擅长营造紧张氛围",
+                avatar: "陈",
+                votes: 0
+            },
+            {
+                id: 2,
+                name: "赵欣宇/满是风余秀华",
+                desc: "多篇章创作者，参与多个故事线，文笔细腻动人",
+                avatar: "赵",
+                votes: 0
+            },
+            {
+                id: 3,
+                name: "宫祯侦/wps_1703001031",
+                desc: "《秋雨》续写作者，擅长角色对话和情节推进",
+                avatar: "宫",
+                votes: 0
+            },
+            {
+                id: 4,
+                name: "薛茹心/Wps_1642632573",
+                desc: "《秋雨》和《残页里的余温》创作者，想象力丰富",
+                avatar: "薛",
+                votes: 0
+            },
+            {
+                id: 5,
+                name: "冯雅婷/发芽的婷",
+                desc: "《秋雨》故事线创作者，擅长悬疑情节设计",
+                avatar: "冯",
+                votes: 0
+            },
+            {
+                id: 6,
+                name: "孙钰婷",
+                desc: "《舍尖上的"灵感"》开篇作者，奇幻校园风代表",
+                avatar: "孙",
+                votes: 0
+            },
+            {
+                id: 7,
+                name: "康鹏举/wps_1755216215",
+                desc: "《舍尖上的"灵感"》续写者，社团活动策划高手",
+                avatar: "康",
+                votes: 0
+            },
+            {
+                id: 8,
+                name: "吴仪/wy",
+                desc: "《舍尖上的"灵感"》创作者，沙漠绿洲场景描写细腻",
+                avatar: "吴",
+                votes: 0
+            },
+            {
+                id: 9,
+                name: "宫祯珍/1703001031",
+                desc: "《舍尖上的"灵感"》结尾创作者，善于情感升华",
+                avatar: "宫",
+                votes: 0
+            },
+            {
+                id: 10,
+                name: "唐青甜/冰凌蔷薇女孩",
+                desc: "《残页里的余温》和《雪白与尘埃》创作者，古风仙侠擅长",
+                avatar: "唐",
+                votes: 0
+            },
+            {
+                id: 11,
+                name: "宫娴玉清/子初",
+                desc: "《残页里的余温》续写者，青丘狐故事线主要创作者",
+                avatar: "宫",
+                votes: 0
+            },
+            {
+                id: 12,
+                name: "吴玉娴/发呆小猫",
+                desc: "《残页里的余温》创作者，仙境场景描写优美",
+                avatar: "吴",
+                votes: 0
+            },
+            {
+                id: 13,
+                name: "刘佳妍/wps_1709737959",
+                desc: "《残页里的余温》续写者，蜃景水晶设定富有想象力",
+                avatar: "刘",
+                votes: 0
+            },
+            {
+                id: 14,
+                name: "李晶珠/wps_1756429552",
+                desc: "《残页里的余温》结尾创作者，星河鲸灵场面震撼",
+                avatar: "李",
+                votes: 0
+            },
+            {
+                id: 15,
+                name: "戎于艳/远山千霖",
+                desc: "《雪白与尘埃》开篇作者，兔圆圆角色生动可爱",
+                avatar: "戎",
+                votes: 0
+            },
+            {
+                id: 16,
+                name: "穆利轩/Forever",
+                desc: "《雪白与尘埃》续写者，人类与兔子文明冲突设计巧妙",
+                avatar: "穆",
+                votes: 0
+            },
+            {
+                id: 17,
+                name: "睢晓雅/响猫",
+                desc: "《雪白与尘埃》续写者，情感描写细腻动人",
+                avatar: "睢",
+                votes: 0
+            },
+            {
+                id: 18,
+                name: "李沁芬/哈哈怪",
+                desc: "《雪白与尘埃》和《日落于弗尔滕》创作者，反转剧情高手",
+                avatar: "李",
+                votes: 0
+            },
+            {
+                id: 19,
+                name: "查拉斯图斯/武妍",
+                desc: "《日落于弗尔滕》开篇作者，奇幻政治小说专家",
+                avatar: "查",
+                votes: 0
+            }
+        ];
+
+        // 投票状态管理
+        let hasVoted = localStorage.getItem('novelAuthorVoted') === 'true';
+        let votedAuthorId = localStorage.getItem('votedAuthorId');
+
+        // 初始化页面
+        function init() {
+            // 从localStorage加载投票数据
+            loadVoteData();
+            
+            // 渲染作者列表
+            renderAuthorsList();
+            
+            // 渲染排行榜
+            renderLeaderboard();
+            
+            // 更新统计
+            updateStats();
+            
+            // 如果已经投过票，禁用所有投票按钮
+            if (hasVoted) {
+                disableVoting();
+            }
+        }
+
+        // 从localStorage加载投票数据
+        function loadVoteData() {
+            const savedVotes = localStorage.getItem('novelAuthorVotes');
+            if (savedVotes) {
+                const voteData = JSON.parse(savedVotes);
+                voteData.forEach(vote => {
+                    const author = authors.find(a => a.id === vote.authorId);
+                    if (author) {
+                        author.votes = vote.votes;
+                    }
+                });
+            }
+        }
+
+        // 保存投票数据到localStorage
+        function saveVoteData() {
+            const voteData = authors.map(author => ({
+                authorId: author.id,
+                votes: author.votes
+            }));
+            localStorage.setItem('novelAuthorVotes', JSON.stringify(voteData));
+        }
+
+        // 渲染作者列表
+        function renderAuthorsList() {
+            const container = document.getElementById('authorsList');
+            container.innerHTML = authors.map(author => `
+                <div class="author-card" data-author-id="${author.id}">
+                    <div class="author-avatar">${author.avatar}</div>
+                    <div class="author-info">
+                        <div class="author-name">${author.name}</div>
+                        <div class="author-desc">${author.desc}</div>
+                        <span class="vote-count" id="voteCount-${author.id}">${author.votes} 票</span>
+                    </div>
+                    <button class="vote-btn" 
+                            onclick="vote(${author.id})" 
+                            id="voteBtn-${author.id}"
+                            ${hasVoted ? 'disabled' : ''}>
+                        ${hasVoted ? '已投票' : '投票'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // 渲染排行榜
+        function renderLeaderboard() {
+            const sortedAuthors = [...authors].sort((a, b) => b.votes - a.votes);
+            const container = document.getElementById('leaderboard');
+            
+            container.innerHTML = sortedAuthors.map((author, index) => {
+                const maxVotes = sortedAuthors[0].votes || 1;
+                const percentage = maxVotes > 0 ? (author.votes / maxVotes) * 100 : 0;
+                
+                let rankBadge = '';
+                if (index === 0) {
+                    rankBadge = '<div class="rank-badge rank-1"><span class="crown">👑</span></div>';
+                } else if (index === 1) {
+                    rankBadge = '<div class="rank-badge rank-2"><span class="crown">🥈</span></div>';
+                } else if (index === 2) {
+                    rankBadge = '<div class="rank-badge rank-3"><span class="crown">🥉</span></div>';
+                } else {
+                    rankBadge = `<div class="rank-badge rank-other">${index + 1}</div>`;
+                }
+
+                return `
+                    <div class="leaderboard-item">
+                        ${rankBadge}
+                        <div class="leaderboard-avatar">${author.avatar}</div>
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">${author.name}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="leaderboard-votes">${author.votes} 票</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 投票功能
+        function vote(authorId) {
+            if (hasVoted) {
+                alert('您已经投过票了！');
+                return;
+            }
+
+            const author = authors.find(a => a.id === authorId);
+            if (!author) return;
+
+            // 增加票数
+            author.votes++;
+            
+            // 更新显示
+            const voteCount = document.getElementById(`voteCount-${authorId}`);
+            const voteBtn = document.getElementById(`voteBtn-${authorId}`);
+            
+            if (voteCount) {
+                voteCount.textContent = `${author.votes} 票`;
+                voteCount.classList.add('vote-success');
+                setTimeout(() => voteCount.classList.remove('vote-success'), 500);
+            }
+            
+            if (voteBtn) {
+                voteBtn.textContent = '已投票';
+                voteBtn.disabled = true;
+                voteBtn.classList.add('vote-success');
+            }
+
+            // 保存投票状态
+            hasVoted = true;
+            votedAuthorId = authorId;
+            localStorage.setItem('novelAuthorVoted', 'true');
+            localStorage.setItem('votedAuthorId', authorId);
+            localStorage.setItem('votedAuthorName', author.name);
+
+            // 保存投票数据
+            saveVoteData();
+
+            // 更新排行榜
+            renderLeaderboard();
+
+            // 更新统计
+            updateStats();
+
+            // 显示成功提示
+            showToast(`投票成功！感谢您支持 ${author.name}`);
+        }
+
+        // 禁用投票
+        function disableVoting() {
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.textContent = '已投票';
+                btn.disabled = true;
+            });
+        }
+
+        // 更新统计
+        function updateStats() {
+            const totalVotes = authors.reduce((sum, author) => sum + author.votes, 0);
+            const votedUsers = hasVoted ? 1 : 0; // 这里应该是实际的用户数
+            
+            document.getElementById('totalVotes').textContent = totalVotes.toLocaleString();
+            document.getElementById('totalVoters').textContent = votedUsers.toLocaleString();
+            document.getElementById('bottomTotalVotes').textContent = totalVotes.toLocaleString();
+        }
+
+        // 分享功能
+        function shareToWeChat() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '小说接龙作者投票',
+                    text: '快来为最喜欢的小说接龙作者投票吧！',
+                    url: window.location.href
+                }).catch(err => console.log('分享失败:', err));
+            } else {
+                // 复制链接到剪贴板
+                const url = window.location.href;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showToast('链接已复制，快去分享给朋友吧！');
+                    }).catch(() => {
+                        showToast('请手动复制链接分享');
+                    });
+                } else {
+                    // 降级处理
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast('链接已复制，快去分享给朋友吧！');
+                }
+            }
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('shareToast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+
+        // 平滑滚动优化
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('a[href^="#"]')) {
+                e.preventDefault();
+                const target = document.querySelector(e.target.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // 添加页面可见性变化监听
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // 页面重新可见时刷新数据
+                loadVoteData();
+                renderAuthorsList();
+                renderLeaderboard();
+                updateStats();
+            }
+        });
+    </script>
+</body>
+</html>
